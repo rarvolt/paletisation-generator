@@ -1,5 +1,5 @@
 import io
-from typing import List, Optional
+from typing import List, Optional, Callable
 from random import randint
 import argparse
 
@@ -108,6 +108,13 @@ class TrayGenerator:
 
         return blocks
 
+    def get_dump_function(self, file_type: str) -> Callable[[List[Size]], str]:
+        func_map = {
+            'simple': self.dump_data_simple,
+            'cplex': self.dump_data_cplex,
+        }
+        return func_map[file_type]
+
     def dump_data_simple(self, blocks: List[Size]) -> str:
         data = io.StringIO()
         data.write(f"{self._tray_size.width} {self._tray_size.height} {len(blocks)}\n")
@@ -117,11 +124,32 @@ class TrayGenerator:
         data.close()
         return contents
 
+    def dump_data_cplex(self, blocks: List[Size]) -> str:
+        """
+        Tray = [20, 20];
+        Elements = [[3,2],[2,4],[5,3],...];
+        """
+        data = io.StringIO()
+        data.write(f"Tray = [{self._tray_size.width}, {self._tray_size.height}]\n")
+        elements = ','.join([f"[{b.width},{b.height}]" for b in blocks])
+        data.write(f"Elements = [{elements}];\n")
+        contents = data.getvalue()
+        data.close()
+        return contents
+
     @staticmethod
     def save_data_to_file(data: str, file_name: str) -> bool:
         with open(file_name, 'w') as f:
             f.write(data)
         return True
+
+
+def check_file_type(value):
+    allowed_types = ['simple', 'cplex']
+    if value not in allowed_types:
+        raise argparse.ArgumentTypeError(f"{value} is not supported file type. "
+                                         f"Choices are {allowed_types}.")
+    return value
 
 
 def main():
@@ -150,6 +178,10 @@ def main():
     parser.add_argument("-f", "--file_name",
                         help="output file name",
                         type=str, default="data.txt")
+    parser.add_argument("-F", "--file_format",
+                        help="output file format. Choices: simple, cplex. Default: simple",
+                        default="simple",
+                        type=check_file_type)
     parser.add_argument("-o", "--stdout",
                         help="print data on stdout",
                         action="store_true")
@@ -162,7 +194,8 @@ def main():
                         Size(args.max_block_size))
 
     blocks = gen.generate_tray()
-    data = gen.dump_data_simple(blocks)
+
+    data = gen.get_dump_function(args.file_format)(blocks)
 
     if args.stdout:
         print(data)
