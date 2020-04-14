@@ -1,7 +1,7 @@
 ## Paletisation Generator
 
 ```
-usage: generator.py [-h] -t WIDTH,HEIGHT -m WIDTH,HEIGHT -M WIDTH,HEIGHT [-n NUM_BLOCKS] [-s NUM_SAMPLES] [-N] [-f FILE_NAME] [-o]
+usage: generator.py [-h] -t WIDTH,HEIGHT -m WIDTH,HEIGHT -M WIDTH,HEIGHT [-n NUM_BLOCKS] [-s NUM_SAMPLES] [-N] [-f FILE_NAME] [-F FILE_FORMAT] [-o]
 
 optional arguments:
   -h, --help            show this help message and exit
@@ -19,5 +19,7 @@ optional arguments:
                         enable multiple samples in one file [TODO]
   -f FILE_NAME, --file_name FILE_NAME
                         output file name
+  -F FILE_FORMAT, --file_format FILE_FORMAT
+                        output file format. Choices: simple, cplex. Default: simple
   -o, --stdout          print data on stdout
 ```
