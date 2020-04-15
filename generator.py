@@ -127,10 +127,12 @@ class TrayGenerator:
     def dump_data_cplex(self, blocks: List[Size]) -> str:
         """
         Tray = [20, 20];
-        Elements = [[3,2],[2,4],[5,3],...];
+        NumElements = 20;
+        Elements = [<3,2>,<2,4>,<5,3>,...];
         """
         data = io.StringIO()
-        data.write(f"Tray = [{self._tray_size.width}, {self._tray_size.height}]\n")
+        data.write(f"Tray = [{self._tray_size.width}, {self._tray_size.height}];\n")
+        data.write(f"NumElements = {len(blocks)};\n")
         elements = ','.join([f"[{b.width},{b.height}]" for b in blocks])
         data.write(f"Elements = [{elements}];\n")
         contents = data.getvalue()
