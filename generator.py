@@ -133,7 +133,7 @@ class TrayGenerator:
         data = io.StringIO()
         data.write(f"Tray = [{self._tray_size.width}, {self._tray_size.height}];\n")
         data.write(f"NumElements = {len(blocks)};\n")
-        elements = ','.join([f"[{b.width},{b.height}]" for b in blocks])
+        elements = ','.join([f"<{b.width},{b.height}>" for b in blocks])
         data.write(f"Elements = [{elements}];\n")
         contents = data.getvalue()
         data.close()
