@@ -154,6 +154,12 @@ def check_file_type(value):
     return value
 
 
+FORMAT_EXT = {
+    'simple': 'txt',
+    'cplex': 'dat',
+}
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("-t", "--tray_size",
@@ -183,6 +189,7 @@ def main():
     parser.add_argument("-F", "--file_format",
                         help="output file format. Choices: simple, cplex. Default: simple",
                         default="simple",
+                        nargs='+',
                         type=check_file_type)
     parser.add_argument("-o", "--stdout",
                         help="print data on stdout",
@@ -197,12 +204,14 @@ def main():
 
     blocks = gen.generate_tray()
 
-    data = gen.get_dump_function(args.file_format)(blocks)
+    for fmt in args.file_format:
+        dump_function = gen.get_dump_function(fmt)
+        data = dump_function(blocks)
 
-    if args.stdout:
-        print(data)
-    else:
-        gen.save_data_to_file(data, args.file_name)
+        if args.stdout:
+            print(data)
+        else:
+            gen.save_data_to_file(data, f"{args.file_name}.{FORMAT_EXT[fmt]}")
 
 
 if __name__ == '__main__':
